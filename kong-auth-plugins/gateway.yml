@@ -2,13 +2,22 @@ _format_version: "2.1"
 _transform: true
 
 services:
-- name: 'my-service'
-  url: 'http://mockbin.org'
+- name: 'kong-auth-center'
+  url: 'http://kongAuthNet:8081'
   routes:
-  - name: 'my-route'
+  - name: 'kong-auth-center-route'
     paths:
       - '/auth'
   plugins:
-  - name: go-hello
+  - name: go-auth
     config:
-      message: "hello world!"
+      datasource:
+        user: 'root'
+        pwd: '123456'
+        host: '172.19.0.2'
+        db: 'generate_db'
+        port: 3306
+        engine: 'mysql'
+      jwt:
+        key: 'eyJhbGciOiJIUzUxMiJ9'
+        expiredTime: 7200

@@ -1,16 +1,12 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"go-kong-auth-practice/kong-auth-center/config"
 	"go-kong-auth-practice/kong-auth-center/constants"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"time"
 )
-
-var authJwt JwtBody
 
 type (
 	CustomerInfo struct {
@@ -21,35 +17,22 @@ type (
 		*jwt.StandardClaims
 		CustomerInfo
 	}
-	JwtBody struct {
+	AuthJwt struct {
 		Key         string `json:"key" yaml:"key"`
 		ExpiredTime int    `json:"expiredTime" yaml:"expiredTime"` //过期时间-秒
 	}
-	AuthJwt struct {
-		Jwt JwtBody `yaml:"jwt"`
-	}
 )
 
-func SetSignedKey(yamlPath string) {
-	yamlFile, e := ioutil.ReadFile(yamlPath)
-	if e != nil {
-		fmt.Println(e)
-	}
-	var jwt AuthJwt
-	err := yaml.Unmarshal(yamlFile, &jwt)
-	if err != nil {
-		fmt.Println(err)
-	}
-	authJwt = jwt.Jwt
-}
 func NewAuthJwt() *AuthJwt {
+	body := config.GetJwt()
 	return &AuthJwt{
-		Jwt: authJwt,
+		Key:         body.Key,
+		ExpiredTime: body.ExpiredTime,
 	}
 }
 func (authJwt *AuthJwt) CreateToken(userId int, loginName string) (string, error) {
 
-	expireTime := time.Second * time.Duration(authJwt.Jwt.ExpiredTime)
+	expireTime := time.Second * time.Duration(authJwt.ExpiredTime)
 	claims := &CustomClaims{
 		&jwt.StandardClaims{
 
@@ -61,11 +44,11 @@ func (authJwt *AuthJwt) CreateToken(userId int, loginName string) (string, error
 		},
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return t.SignedString([]byte(authJwt.Jwt.Key))
+	return t.SignedString([]byte(authJwt.Key))
 }
 func (authJwt *AuthJwt) ParseToken(token string) (*CustomClaims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(authJwt.Jwt.Key), nil
+		return []byte(authJwt.Key), nil
 	})
 	if tokenClaims != nil {
 		if claims, ok := tokenClaims.Claims.(*CustomClaims); ok && tokenClaims.Valid {
