@@ -1,0 +1,11 @@
+datasource:
+  user: 'root'
+  pwd: '123456'
+  host: '172.19.0.2'
+  db: 'generate_db'
+  port: 3306
+  engine: 'mysql'
+  id: 'generate_db'
+jwt:
+  key: 'eyJhbGciOiJIUzUxMiJ9'
+  expiredTime: 7200
