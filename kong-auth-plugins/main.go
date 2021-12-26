@@ -48,7 +48,5 @@ func (conf Config) Access(kong *pdk.PDK) {
 	authErr := authJwt.Auth(token)
 	if authErr != nil {
 		kong.Response.ExitStatus(http.StatusUnauthorized)
-	} else {
-
 	}
 }

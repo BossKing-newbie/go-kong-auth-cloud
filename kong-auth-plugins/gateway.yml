@@ -8,8 +8,14 @@ services:
   - name: 'kong-auth-center-route'
     paths:
       - '/auth'
+- name: 'kong-sys-center'
+  url: 'http://kongSysNet:8081'
+  routes:
+  - name: 'kong-sys-center-route'
+    paths:
+      - '/sys'
   plugins:
-  - name: go-auth
+  - name: auth-plugin
     config:
       datasource:
         user: 'root'
