@@ -3,9 +3,8 @@ package main
 import (
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/server"
+	"go-kong-auth-practice/kong-auth-plugins/constant"
 	"go-kong-auth-practice/kong-auth-plugins/middleware"
-	"log"
-	"net/http"
 )
 
 var Version = "1.0"
@@ -39,14 +38,16 @@ func New() interface{} {
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
+	/*注意事项：不要使用err.Error（）.该函数会导致插件莫名崩溃进而退出*/
+	exitBody := constant.NewExitBody(kong)
 	token, err := kong.Request.GetHeader("authorization")
 	if err != nil {
-		log.Printf("Error reading 'authorization' header: %s", err.Error())
+		exitBody.Failed("token获取失败")
 	}
 	/*token验证*/
 	authJwt := middleware.NewAuthJwt(conf.Jwt.Key, conf.Jwt.ExpiredTime)
 	authErr := authJwt.Auth(token)
 	if authErr != nil {
-		kong.Response.ExitStatus(http.StatusUnauthorized)
+		exitBody.AuthFailed("权限验证失败")
 	}
 }

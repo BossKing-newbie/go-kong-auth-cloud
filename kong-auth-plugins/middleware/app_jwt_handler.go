@@ -40,7 +40,7 @@ func (authJwt *AuthJwt) ParseToken(token string) (*CustomClaims, error) {
 }
 func (authJwt *AuthJwt) Auth(token string) error {
 	if len(token) == 0 {
-		err := errors.New("未鉴权")
+		err := errors.New("token不能为空")
 		return err
 	} else {
 		claims, err := authJwt.ParseToken(token)

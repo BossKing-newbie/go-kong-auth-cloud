@@ -3,13 +3,13 @@ _transform: true
 
 services:
 - name: 'kong-auth-center'
-  url: 'http://kongAuthNet:8081'
+  url: 'http://172.19.0.3:8081'
   routes:
   - name: 'kong-auth-center-route'
     paths:
       - '/auth'
 - name: 'kong-sys-center'
-  url: 'http://kongSysNet:8081'
+  url: 'http://172.19.0.4:8087'
   routes:
   - name: 'kong-sys-center-route'
     paths:
